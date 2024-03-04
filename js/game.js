@@ -1,9 +1,19 @@
 const grid = document.querySelector('.grid');
 
 const cartasFront =[
+    'carta-front-css',
+    'carta-front-html',
+    'carta-front-java',
+    'carta-front-javascript',
+    'carta-front-node',
+    'carta-front-php',
+    'carta-front-r',
+    'carta-front-scala',
+    'carta-front-swift',
+    'carta-front-thymeleaf',
+    'carta-front-typescript',
     'carta-front-angular',
     'carta-front-c++',
-    'carta-front-js',
     'carta-front-python',
     'carta-front-react',
     'carta-front-ruby'
@@ -17,8 +27,36 @@ const createElemment =(tag, className) =>{
 let firstCard = '';
 let secondCard ='';
 
-const checkCards =()=> {
+const checkEndGame= () => {
+    const disabledCards = document.querySelectorAll('.disable-card');
 
+    if(disabledCards.length === 34){
+    alert('Você venceu!');
+    }
+}
+
+const checkCards =()=> {
+    const firstCartaFront = firstCard.getAttribute('data-cartaFront');
+    const secondCartaFront = secondCard.getAttribute('data-cartaFront');
+
+    if(firstCartaFront === secondCartaFront){
+        firstCard.firstChild.classList.add('disable-card');
+        secondCard.firstChild.classList.add('disable-card');
+
+        firstCard = '';
+        secondCard = '';
+
+        checkEndGame();
+    } else{
+
+        setTimeout(()=> {
+            firstCard.classList.remove('reveal-card');
+            secondCard.classList.remove('reveal-card');
+
+            firstCard = '';
+            secondCard = '';
+        }, 500);
+    }
 }
 
 const revealCard = ({target}) => {
@@ -32,9 +70,10 @@ const revealCard = ({target}) => {
         target.parentNode.classList.add('reveal-card');
         secondCard = target.parentNode;
 
+        checkCards();
+
     }
 
-    target.parentNode.classList.add('reveal-card');
 }
 
 const createCard = (cartaFront) => {
@@ -48,6 +87,7 @@ const createCard = (cartaFront) => {
     card.appendChild(back);
 
     card.addEventListener('click', revealCard);
+    card.setAttribute('data-cartaFront', cartaFront);
 
     return card;
 }
