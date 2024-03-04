@@ -1,4 +1,5 @@
 const grid = document.querySelector('.grid');
+const timer = document.querySelector('.timer');
 
 const cartasFront =[
     'carta-front-css',
@@ -30,8 +31,9 @@ let secondCard ='';
 const checkEndGame= () => {
     const disabledCards = document.querySelectorAll('.disable-card');
 
-    if(disabledCards.length === 34){
-    alert('Você venceu!');
+    if(disabledCards.length === 32){
+        clearInterval(this.loop);
+        alert(`Parabéns, seu tempo foi: ${timer.innerHTML}!`);
     }
 }
 
@@ -102,6 +104,13 @@ const loadGame = () => {
         grid.appendChild(card);
     });
 }
+const startTimer = () => {
+    this.loop = setInterval(() => {
+    const currentTime = Number(timer.innerHTML);
+    timer.innerHTML = currentTime + 1;
+    }, 1000);
+}
 
+startTimer();
 loadGame();
 
