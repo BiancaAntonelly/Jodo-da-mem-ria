@@ -9,50 +9,92 @@
     <title>Memory Game</title>
 </head>
 <body bgcolor="#7E3661">
-    <form class="login-form">
-        <div class="login-header">
-            <h1>Memory Game</h1>
+<form class="login-form" action="/salvar-nome" method="POST">
+    <div class="login-header">
+        <h1>Memory Game</h1>
+    </div>
+    <input type="text" placeholder="Nome" id="nome" class="login-input" name="nome">
+
+    <div class="login-checkbox">
+        <h4>Selecione os temas que você quer jogar:</h4>
+        <div class="checkbox-column">
+            <input type="checkbox" id="tema_programacao">
+            <label for="tema_programacao">Linguagens de Programação</label>
+            <input type="checkbox" id="tema_harryPotter">
+            <label for="tema_harryPotter">Harry Potter</label>
+            <input type="checkbox" id="tema_animais">
+            <label for="tema_animais">Animais</label>
+            <input type="checkbox" id="tema_bandeira">
+            <label for="tema_bandeira">Bandeiras</label>
         </div>
-            <input type="text" placeholder="Nome" id="nome" class="login-input">
+    </div>
 
-        <div class="login-checkbox">
-            <h4>Selecione os temas que você quer jogar:</h4>
-            <div class="checkbox-column">
-                <input type="checkbox" id="tema_programacao">
-                <label for="tema_programacao">Linguagens de Programação</label>
-                <input type="checkbox" id="tema_harryPotter">
-                <label for="tema_harryPotter">Harry Potter</label>
-                <input type="checkbox" id="tema_animais">
-                <label for="tema_animais">Animais</label>
-                <input type="checkbox" id="tema_bandeira">
-                <label for="tema_bandeira">Bandeiras</label>
-            </div>
-        </div>
+    <div class="alert alert-danger alert-white rounded" id="error-card-nome" style="display: none;">
+        <div class="icon"><i class="fa fa-times-circle"></i></div>
+        <strong>Error!</strong> Você precisa preencher o campo nome.
+    </div>
+    <div class="alert alert-danger alert-white rounded" id="error-card-checkbox" style="display: none;">
+        <div class="icon"><i class="fa fa-times-circle"></i></div>
+        <strong>Error!</strong> Você precisa selecionar pelo menos um tema para jogar.
+    </div>
+    <button id="button" type="submit" class="login__button">Play</button>
+</form>
 
-        <div class="wrap">
-            <button class="button" id="botao-jogar">Jogar</button>
-        </div>
+<script>
+    const input = document.querySelector('.login-input');
+    const form = document.querySelector('.login-form');
 
-        <div class="alert alert-danger alert-white rounded" id="error-card" style="display: none;">
-            <div class="icon"><i class="fa fa-times-circle"></i></div>
-            <strong>Error!</strong> Você precisa preencher o campo nome.
-        </div>
 
-        <script>
-            var botaoJogar = document.getElementById("botao-jogar");
-            var inputNome = document.getElementById("nome");
-            var errorCard = document.getElementById("error-card");
+    const handleSubmit = (event) => {
+        event.preventDefault();
 
-            botaoJogar.addEventListener("click", function() {
-                if (inputNome.value.trim() === "") {
-                    errorCard.style.display = "block";
-                } else {
-                    window.location.href = "memoryGame.html";
-                }
-            });
-        </script>
+        localStorage.setItem('player', input.value);
+        form.submit();
+        window.location = 'pages/memoryGame.html';
+    }
 
-    </form>
+    form.addEventListener('submit', handleSubmit);
 
+    var botaoJogar = document.getElementById("button");
+    var inputNome = document.getElementById("nome");
+    var errorCard = document.getElementById("error-card-nome");
+    var errorCardCheckbox = document.getElementById("error-card-checkbox");
+
+    function atLeastOneCheckboxChecked() {
+        const checkboxes = document.querySelectorAll('.login-checkbox input[type="checkbox"]');
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    botaoJogar.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        if (inputNome.value.trim() === "") {
+            errorCard.style.display = "block";
+            setTimeout(function() {
+                errorCard.style.display = "none";
+            }, 3000);
+        }
+        if (!atLeastOneCheckboxChecked()) {
+            errorCardCheckbox.style.display = "block";
+            setTimeout(function() {
+                errorCardCheckbox.style.display = "none";
+            }, 3000);
+        }
+        if (inputNome.value.trim() !== "" && atLeastOneCheckboxChecked()) {
+            localStorage.setItem('player', inputNome.value);
+            form.submit();
+            window.location = 'pages/memoryGame.html';
+        }
+    });
+
+
+
+
+</script>
 </body>
 </html>

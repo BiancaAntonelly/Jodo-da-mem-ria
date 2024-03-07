@@ -9,8 +9,8 @@
 
 .card{
     aspect-ratio: 1/3;
-    width: 120%;
-    height: 120px;
+    width: 124px;
+    height: 124px;
     background-color: #f5f5f5;
     border-radius: 5px;
     position: relative;
@@ -20,8 +20,8 @@
 }
 
 .face {
-    width: 120px;
-    height: 120px;
+    width: 124px;
+    height: 124px;
     position: absolute;
     background-size: cover;
     background-position: center;
@@ -36,6 +36,7 @@
 .back{
     background-image: url('/images/images/carta-back.png');
     backface-visibility: hidden;
+    background-color: white;
 }
 
 .reveal-card{
