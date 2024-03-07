@@ -1,3 +1,6 @@
+* {
+    font-family: "Press Start 2P", system-ui;
+}
 
 .login-form {
     display: flex;

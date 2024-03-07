@@ -1,5 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
+const path = require('path');
 
 const app = express();
 const port = 3000;
@@ -26,6 +27,7 @@ pool.query(`
 
 // Middleware para analisar dados do formulário
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, '..')));
 
 console.log('vai ate aqui');
 app.post('/salvar-nome', async (req, res) => {
@@ -39,6 +41,14 @@ console.log('nome salvo:', nome);
         console.error('Erro ao salvar o nome do usuário:', error);
         res.status(500).send('Erro ao salvar o nome do usuário');
     }
+});
+
+app.get('/', async (req, res) => {
+    await res.sendFile('index.html');
+});
+
+app.get('/memory-game', async (req, res) => {
+    await res.sendFile(path.join(__dirname, '..', 'pages/memoryGame.html'));
 });
 
 app.listen(port, () => {
