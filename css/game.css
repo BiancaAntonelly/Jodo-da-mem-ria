@@ -1,10 +1,22 @@
-* {
-    font-family: "Press Start 2P", system-ui;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.login-header{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
 }
 
+.login-header h4{
+    font-size: 60px;
+    color: #202020;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow:
+            -2px -2px 0 #204477,
+            2px -2px 0 #C97191,
+            -2px  2px 0 #C97191,
+            2px  2px 0 #C97191;
+}
 main {
     display: flex;
     flex-direction: column;
