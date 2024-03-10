@@ -28,12 +28,13 @@ const Player = sequelize.define(
 );
 
 // Middleware para analisar dados do formulário
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "..", "front")));
 
 app.post("/players", async (req, res) => {
   const { name, time } = req.body;
-  console.log("nome salvo:", nome);
+  console.log("nome salvo:", name);
   try {
     // Insere o nome do usuário no banco de dados
     const player = await Player.create({ name, time });

@@ -1,116 +1,137 @@
-const grid = document.querySelector('.grid');
-const timer = document.querySelector('.timer');
+const grid = document.querySelector(".grid");
+const timer = document.querySelector(".timer");
 
-const cartasFront =[
-    'carta-front-css',
-    'carta-front-html',
-    'carta-front-java',
-    'carta-front-javascript',
-    'carta-front-node',
-    'carta-front-php',
-    'carta-front-r',
-    'carta-front-scala',
-    'carta-front-swift',
-    'carta-front-thymeleaf',
-    'carta-front-typescript',
-    'carta-front-angular',
-    'carta-front-c++',
-    'carta-front-python',
-    'carta-front-react',
-    'carta-front-ruby'
-]
-const createElemment =(tag, className) =>{
-    const element = document.createElement(tag);
-    element.className = className;
-    return element;
-}
+const cartasFront = [
+  "carta-front-css",
+  "carta-front-html",
+  "carta-front-java",
+  "carta-front-javascript",
+  "carta-front-node",
+  "carta-front-php",
+  "carta-front-r",
+  "carta-front-scala",
+  "carta-front-swift",
+  "carta-front-thymeleaf",
+  "carta-front-typescript",
+  "carta-front-angular",
+  "carta-front-c++",
+  "carta-front-python",
+  "carta-front-react",
+  "carta-front-ruby",
+];
+const qtCartas = 5;
 
-let firstCard = '';
-let secondCard ='';
+const createElemment = (tag, className) => {
+  const element = document.createElement(tag);
+  element.className = className;
+  return element;
+};
 
-const checkEndGame= () => {
-    const disabledCards = document.querySelectorAll('.disable-card');
+let firstCard = "";
+let secondCard = "";
+let playerName = "";
 
-    if(disabledCards.length === 32){
-        clearInterval(this.loop);
-        alert(`Parabéns, seu tempo foi: ${timer.innerHTML}!`);
-    }
-}
+const checkName = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  playerName = urlParams.get("nome");
 
-const checkCards =()=> {
-    const firstCartaFront = firstCard.getAttribute('data-cartaFront');
-    const secondCartaFront = secondCard.getAttribute('data-cartaFront');
+  if (!playerName) {
+    window.location.href = "/";
+  }
+};
 
-    if(firstCartaFront === secondCartaFront){
-        firstCard.firstChild.classList.add('disable-card');
-        secondCard.firstChild.classList.add('disable-card');
+const checkEndGame = async () => {
+  const disabledCards = document.querySelectorAll(".disable-card");
 
-        firstCard = '';
-        secondCard = '';
+  if (disabledCards.length === qtCartas * 2) {
+    clearInterval(this.loop);
+    const time = Number(timer.innerHTML);
+    alert(`Parabéns, seu tempo foi: ${time}!`);
 
-        checkEndGame();
-    } else{
+    await fetch("/players", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: playerName, time }),
+    });
+  }
+};
 
-        setTimeout(()=> {
-            firstCard.classList.remove('reveal-card');
-            secondCard.classList.remove('reveal-card');
+const checkCards = () => {
+  const firstCartaFront = firstCard.getAttribute("data-cartaFront");
+  const secondCartaFront = secondCard.getAttribute("data-cartaFront");
 
-            firstCard = '';
-            secondCard = '';
-        }, 500);
-    }
-}
+  if (firstCartaFront === secondCartaFront) {
+    firstCard.firstChild.classList.add("disable-card");
+    secondCard.firstChild.classList.add("disable-card");
 
-const revealCard = ({target}) => {
-    if(target.parentNode.className.includes(('reveal-card'))){
-        return;
-    }
-    if(firstCard === ''){
-        target.parentNode.classList.add('reveal-card');
-        firstCard = target.parentNode;
-    } else if (secondCard === ''){
-        target.parentNode.classList.add('reveal-card');
-        secondCard = target.parentNode;
+    firstCard = "";
+    secondCard = "";
 
-        checkCards();
+    checkEndGame();
+  } else {
+    setTimeout(() => {
+      firstCard.classList.remove("reveal-card");
+      secondCard.classList.remove("reveal-card");
 
-    }
+      firstCard = "";
+      secondCard = "";
+    }, 500);
+  }
+};
 
-}
+const revealCard = ({ target }) => {
+  if (target.parentNode.className.includes("reveal-card")) {
+    return;
+  }
+  if (firstCard === "") {
+    target.parentNode.classList.add("reveal-card");
+    firstCard = target.parentNode;
+  } else if (secondCard === "") {
+    target.parentNode.classList.add("reveal-card");
+    secondCard = target.parentNode;
+
+    checkCards();
+  }
+};
 
 const createCard = (cartaFront) => {
-    const card = createElemment('div', 'card')
-    const front = createElemment('div', 'face front');
-    const back = createElemment('div', 'face back');
+  const card = createElemment("div", "card");
+  const front = createElemment("div", "face front");
+  const back = createElemment("div", "face back");
 
+  front.style.backgroundImage = `url(../images/programacao/${cartaFront}.png)`;
+  card.appendChild(front);
+  card.appendChild(back);
 
-    front.style.backgroundImage = `url(../images/programacao/${cartaFront}.png)`;
-    card.appendChild(front);
-    card.appendChild(back);
+  card.addEventListener("click", revealCard);
+  card.setAttribute("data-cartaFront", cartaFront);
 
-    card.addEventListener('click', revealCard);
-    card.setAttribute('data-cartaFront', cartaFront);
-
-    return card;
-}
+  return card;
+};
 
 const loadGame = () => {
-    const duplicatedCartasFront=[...cartasFront, ...cartasFront];
+  const cartas = cartasFront
+    .sort(() => Math.random() - 0.5)
+    .filter((_, index) => index < qtCartas);
 
-    const shuffledArray = duplicatedCartasFront.sort(()=> Math.random() - 0.5);
+  const duplicatedCartasFront = [...cartas, ...cartas];
 
-    duplicatedCartasFront.forEach((cartaFront)=>{
-        const card = createCard(cartaFront);
-        grid.appendChild(card);
-    });
-}
+  const shuffledArray = duplicatedCartasFront.sort(() => Math.random() - 0.5);
+
+  duplicatedCartasFront.forEach((cartaFront) => {
+    const card = createCard(cartaFront);
+    grid.appendChild(card);
+  });
+};
 const startTimer = () => {
-    this.loop = setInterval(() => {
+  this.loop = setInterval(() => {
     const currentTime = Number(timer.innerHTML);
     timer.innerHTML = currentTime + 1;
-    }, 1000);
-}
+  }, 1000);
+};
 
+checkName();
 startTimer();
 loadGame();
-
