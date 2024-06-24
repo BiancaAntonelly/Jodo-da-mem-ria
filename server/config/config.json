@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "postgres",
-    "password": "postgres",
+    "password": "1618",
     "database": "jogo_da_memoria",
     "host": "localhost",
     "port": 5432,

@@ -20,55 +20,42 @@
 
     <title>Memory Game</title>
   </head>
-  <body bgcolor="#7E3661">
-    <form class="login-form" action="/memory-game" method="GET">
+  <body>
       <div class="login-header">
-        <h1>Memory Game</h1>
+          <h1>Memory Game</h1>
       </div>
-      <input
-        type="text"
-        placeholder="Nome"
-        id="nome"
-        class="login-input"
-        name="nome"
-      />
-
-      <div class="login-checkbox">
-        <h4>Selecione os temas que você quer jogar:</h4>
-        <div class="checkbox-column">
-          <input type="checkbox" id="tema_programacao" />
-          <label for="tema_programacao">Linguagens de Programação</label>
-          <input type="checkbox" id="tema_harryPotter" />
-          <label for="tema_harryPotter">Harry Potter</label>
-          <input type="checkbox" id="tema_animais" />
-          <label for="tema_animais">Animais</label>
-          <input type="checkbox" id="tema_bandeira" />
-          <label for="tema_bandeira">Bandeiras</label>
+    <div class="main">
+      <nav><h1>Vamos jogar!</h1></nav>
+      <form class="login-form" action="/memory-game" method="GET">
+        <div class="input-area">
+          <span>Digite seu nome: </span>
+          <input
+            type="text"
+            placeholder="Nome"
+            id="nome"
+            class="login-input"
+            name="nome"
+          />
         </div>
-      </div>
+        <div
+          class="alert alert-danger alert-white rounded"
+          id="error-card-nome"
+          style="display: none"
+        >
+          <div class="icon"><i class="fa fa-times-circle"></i></div>
+          <strong>Error!</strong> Você precisa preencher o campo nome.
+        </div>
+          <a id="button" href="#" class="btn btn-white btn-animate">Play</a>
+      </form>
+    </div>
 
-      <div
-        class="alert alert-danger alert-white rounded"
-        id="error-card-nome"
-        style="display: none"
-      >
-        <div class="icon"><i class="fa fa-times-circle"></i></div>
-        <strong>Error!</strong> Você precisa preencher o campo nome.
-      </div>
-      <div
-        class="alert alert-danger alert-white rounded"
-        id="error-card-checkbox"
-        style="display: none"
-      >
-        <div class="icon"><i class="fa fa-times-circle"></i></div>
-        <strong>Error!</strong> Você precisa selecionar pelo menos um tema para
-        jogar.
-      </div>
-      <div class="text-box">
-        <a id="button" href="#" class="btn btn-white btn-animate">Play</a>
-      </div>
-    </form>
+    <div class="scoreboard">
+      <nav><h1>Ranking</h1></nav>
+      <ul id="ranking">
 
+      </ul>
+    </div>
+    <script src="./js/index.js"></script>
     <script>
       const input = document.querySelector(".login-input");
       const form = document.querySelector(".login-form");
@@ -86,19 +73,6 @@
       var botaoJogar = document.getElementById("button");
       var inputNome = document.getElementById("nome");
       var errorCard = document.getElementById("error-card-nome");
-      var errorCardCheckbox = document.getElementById("error-card-checkbox");
-
-      function atLeastOneCheckboxChecked() {
-        const checkboxes = document.querySelectorAll(
-          '.login-checkbox input[type="checkbox"]'
-        );
-        for (let i = 0; i < checkboxes.length; i++) {
-          if (checkboxes[i].checked) {
-            return true;
-          }
-        }
-        return false;
-      }
 
       botaoJogar.addEventListener("click", function (event) {
         event.preventDefault();
@@ -109,13 +83,8 @@
             errorCard.style.display = "none";
           }, 3000);
         }
-        if (!atLeastOneCheckboxChecked()) {
-          errorCardCheckbox.style.display = "block";
-          setTimeout(function () {
-            errorCardCheckbox.style.display = "none";
-          }, 3000);
-        }
-        if (inputNome.value.trim() !== "" && atLeastOneCheckboxChecked()) {
+
+        if (inputNome.value.trim() !== "") {
           localStorage.setItem("player", inputNome.value);
           form.submit();
         }

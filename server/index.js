@@ -11,20 +11,20 @@ const port = 3000;
 const sequelize = new Sequelize(config.development);
 
 const Player = sequelize.define(
-  "player",
-  {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    "player",
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      time: { // Mudança: renomeie "time" para "score"
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    time: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-  },
-  {
-    tableName: "players",
-  }
+    {
+      tableName: "players", // Mudança: mantenha o nome da tabela como "players"
+    }
 );
 
 // Middleware para analisar dados do formulário
@@ -42,6 +42,17 @@ app.post("/players", async (req, res) => {
   } catch (error) {
     console.error("Erro ao salvar o nome do usuário:", error);
     res.status(500).send("Erro ao salvar o nome do usuário");
+  }
+});
+
+app.get("/players", async (req, res) => {
+  try {
+    // Busca todos os usuários no banco de dados
+    const players = await Player.findAll();
+    res.send(players);
+  } catch (error) {
+    console.error("Erro ao buscar os usuários:", error);
+    res.status(500).send("Erro ao buscar os usuários");
   }
 });
 
