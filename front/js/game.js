@@ -33,8 +33,7 @@ let revealedCards = [];
 let playerName = "";
 
 const checkName = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  playerName = urlParams.get("nome");
+  playerName = sessionStorage.getItem("nome");
 
   if (!playerName) {
     window.location.href = "/";

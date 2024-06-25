@@ -56,6 +56,25 @@ const updateMode = (isOnline) => {
 botaoLocal.addEventListener("click", () => updateMode(false));
 botaoOnline.addEventListener("click", () => updateMode(true));
 
+const toGame = (online = false, sala = null) => {
+  if (online) {
+    const searchParams = new URLSearchParams();
+
+    if (sala) {
+      searchParams.set("sala", sala);
+    }
+
+    window.location.href = `/memory-game/online?${searchParams.toString()}`;
+  } else {
+    window.location.href = "/memory-game";
+  }
+};
+
+const saveName = (name) => {
+  localStorage.setItem("nome", name);
+  sessionStorage.setItem("nome", name);
+};
+
 botaoJogar.addEventListener("click", function (event) {
   event.preventDefault();
 
@@ -69,7 +88,8 @@ botaoJogar.addEventListener("click", function (event) {
     return;
   }
 
-  form.submit();
+  saveName(nome);
+  toGame();
 });
 
 botaoEntrarSala.addEventListener("click", async function (event) {
@@ -99,13 +119,16 @@ botaoEntrarSala.addEventListener("click", async function (event) {
     return;
   }
 
-  form.submit();
+  saveName(nome);
+  toGame(true, code);
 });
 
 botaoCriarSala.addEventListener("click", function (event) {
   event.preventDefault();
 
-  if (inputNome.value.trim() === "") {
+  const nome = inputNome.value.trim();
+
+  if (nome === "") {
     errorCardNome.style.display = "block";
     setTimeout(function () {
       errorCardNome.style.display = "none";
@@ -113,8 +136,8 @@ botaoCriarSala.addEventListener("click", function (event) {
     return;
   }
 
-  inputSala.value = "";
-  form.submit();
+  saveName(nome);
+  toGame(true);
 });
 
 const getScoreboard = async () => {
@@ -157,6 +180,11 @@ const getScoreboard = async () => {
 const url = new URL(window.location.href);
 const searchParams = url.searchParams;
 const sala = searchParams.get("sala");
+const nome = localStorage.getItem("nome");
+
+if (nome) {
+  inputNome.value = nome;
+}
 
 if (sala) {
   updateMode(true);

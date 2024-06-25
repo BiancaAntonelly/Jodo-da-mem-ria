@@ -30,8 +30,7 @@ const createElemment = (tag, className) => {
 let game = {};
 
 const checkName = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  playerName = urlParams.get("nome");
+  playerName = sessionStorage.getItem("nome");
 
   if (!playerName) {
     if (sala) {
@@ -157,11 +156,6 @@ const updateButtons = () => {
   }
 };
 
-const url = new URL(window.location.href);
-const params = url.searchParams;
-const nome = params.get("nome");
-let sala = params.get("sala");
-
 const updateCards = (oldGame, newGame) => {
   const maxLength = Math.max(oldGame.cards?.length || 0, newGame.cards.length);
 
@@ -215,7 +209,7 @@ const updateGame = (newGame) => {
     history.replaceState(
       "online",
       "Memory Game",
-      `/memory-game/online?nome=${nome}&sala=${sala}`
+      `/memory-game/online?sala=${sala}`
     );
   }
 
@@ -226,11 +220,14 @@ const updateGame = (newGame) => {
   updateButtons();
 };
 
+const url = new URL(window.location.href);
+const params = url.searchParams;
+let sala = params.get("sala");
 checkName();
 
 const socket = io({
   query: {
-    name: nome,
+    name: playerName,
     roomCode: sala,
   },
 });
