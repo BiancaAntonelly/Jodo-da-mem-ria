@@ -154,6 +154,8 @@ class Game {
         setTimeout(() => {
           this.firstCard = null;
           this.secondCard = null;
+
+          unflipCallback();
         }, 100);
       } else {
         setTimeout(() => {

@@ -10,5 +10,9 @@
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.2"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
   }
 }

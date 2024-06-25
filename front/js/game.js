@@ -29,6 +29,7 @@ const createElemment = (tag, className) => {
 
 let firstCard = null;
 let secondCard = null;
+let revealedCards = [];
 let playerName = "";
 
 const checkName = () => {
@@ -71,8 +72,10 @@ const checkCards = () => {
       card.firstChild.classList.add("disable-card");
     });
 
-    firstCard = null;
-    secondCard = null;
+    setTimeout(() => {
+      firstCard = null;
+      secondCard = null;
+    }, 100);
 
     checkEndGame();
   } else {
@@ -90,10 +93,14 @@ const checkCards = () => {
 const revealCard = (index) => {
   const card = grid.getElementsByClassName("card")?.[index];
 
+  if (card.firstChild.className.includes("disable-card")) {
+    return;
+  }
+
   if (firstCard === null) {
     card.classList.add("reveal-card");
     firstCard = index;
-  } else if (secondCard === null) {
+  } else if (firstCard !== index && secondCard === null) {
     card.classList.add("reveal-card");
     secondCard = index;
 
