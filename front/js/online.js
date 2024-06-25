@@ -190,6 +190,12 @@ const updateCards = (oldGame, newGame) => {
   }
 };
 
+const updateRoom = () => {
+  const roomCode = document.getElementById("room-code");
+
+  roomCode.innerHTML = game.roomCode;
+};
+
 const startButton = document.getElementById("start-button");
 const playAgainButton = document.getElementById("play-again-button");
 
@@ -203,6 +209,8 @@ const updateGame = (newGame) => {
 
   if (sala !== game.roomCode) {
     sala = game.roomCode;
+
+    updateRoom();
 
     history.replaceState(
       "online",

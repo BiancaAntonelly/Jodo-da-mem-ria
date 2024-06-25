@@ -247,6 +247,10 @@ ul li {
   color: #673ab7;
 }
 
+.players-label {
+  margin: 2rem 2rem 0;
+  color: #673ab7;
+}
 .modal.open {
   display: flex;
 }
