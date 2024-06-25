@@ -19,7 +19,7 @@ const cartasFront = [
   "carta-front-react",
   "carta-front-ruby",
 ];
-const qtCartas = 5;
+const qtCartas = 10;
 
 const createElemment = (tag, className) => {
   const element = document.createElement(tag);
@@ -27,8 +27,8 @@ const createElemment = (tag, className) => {
   return element;
 };
 
-let firstCard = "";
-let secondCard = "";
+let firstCard = null;
+let secondCard = null;
 let playerName = "";
 
 const checkName = () => {
@@ -60,44 +60,48 @@ const checkEndGame = async () => {
 };
 
 const checkCards = () => {
-  const firstCartaFront = firstCard.getAttribute("data-cartaFront");
-  const secondCartaFront = secondCard.getAttribute("data-cartaFront");
+  const cardsEls = grid.getElementsByClassName("card");
+  const cards = [cardsEls[firstCard], cardsEls[secondCard]];
+
+  const firstCartaFront = cartas[firstCard];
+  const secondCartaFront = cartas[secondCard];
 
   if (firstCartaFront === secondCartaFront) {
-    firstCard.firstChild.classList.add("disable-card");
-    secondCard.firstChild.classList.add("disable-card");
+    cards.forEach((card) => {
+      card.firstChild.classList.add("disable-card");
+    });
 
-    firstCard = "";
-    secondCard = "";
+    firstCard = null;
+    secondCard = null;
 
     checkEndGame();
   } else {
     setTimeout(() => {
-      firstCard.classList.remove("reveal-card");
-      secondCard.classList.remove("reveal-card");
+      cards.forEach((card) => {
+        card.classList.remove("reveal-card");
+      });
 
-      firstCard = "";
-      secondCard = "";
+      firstCard = null;
+      secondCard = null;
     }, 500);
   }
 };
 
-const revealCard = ({ target }) => {
-  if (target.parentNode.className.includes("reveal-card")) {
-    return;
-  }
-  if (firstCard === "") {
-    target.parentNode.classList.add("reveal-card");
-    firstCard = target.parentNode;
-  } else if (secondCard === "") {
-    target.parentNode.classList.add("reveal-card");
-    secondCard = target.parentNode;
+const revealCard = (index) => {
+  const card = grid.getElementsByClassName("card")?.[index];
+
+  if (firstCard === null) {
+    card.classList.add("reveal-card");
+    firstCard = index;
+  } else if (secondCard === null) {
+    card.classList.add("reveal-card");
+    secondCard = index;
 
     checkCards();
   }
 };
 
-const createCard = (cartaFront) => {
+const createCard = (cartaFront, index) => {
   const card = createElemment("div", "card");
   const front = createElemment("div", "face front");
   const back = createElemment("div", "face back");
@@ -106,23 +110,24 @@ const createCard = (cartaFront) => {
   card.appendChild(front);
   card.appendChild(back);
 
-  card.addEventListener("click", revealCard);
-  card.setAttribute("data-cartaFront", cartaFront);
+  card.addEventListener("click", () => revealCard(index));
 
   return card;
 };
 
+let cartas;
+
 const loadGame = () => {
-  const cartas = cartasFront
+  cartas = cartasFront
     .sort(() => Math.random() - 0.5)
     .filter((_, index) => index < qtCartas);
 
-  const duplicatedCartasFront = [...cartas, ...cartas];
+  cartas = [...cartas, ...cartas];
 
-  const shuffledArray = duplicatedCartasFront.sort(() => Math.random() - 0.5);
+  cartas.sort(() => Math.random() - 0.5);
 
-  duplicatedCartasFront.forEach((cartaFront) => {
-    const card = createCard(cartaFront);
+  cartas.forEach((cartaFront, index) => {
+    const card = createCard(cartaFront, index);
     grid.appendChild(card);
   });
 };
@@ -140,40 +145,30 @@ const getScoreboard = async () => {
       throw new Error("Erro ao buscar os jogadores");
     }
     const players = await response.json();
-
-    // Ordenar os jogadores pelo valor da chave 'time' do menor para o maior
-    const sortedPlayers = players.sort((a, b) => a.time - b.time);
-
-    // Selecionar a ul pelo ID
     const rankingList = document.getElementById("ranking");
 
-    // Limpar qualquer conteúdo existente na ul
     rankingList.innerHTML = "";
 
-    const firstLi = document.createElement('li');
-    const nome = document.createElement('span');
-    const tempo = document.createElement('span');
+    const firstLi = document.createElement("li");
+    const nome = document.createElement("span");
+    const tempo = document.createElement("span");
     nome.textContent = `Nome`;
     tempo.textContent = `Tempo`;
-    firstLi.classList.add('liTitle');
+    firstLi.classList.add("liTitle");
     firstLi.appendChild(nome);
     firstLi.appendChild(tempo);
     rankingList.appendChild(firstLi);
 
-
-    // Criar e adicionar os li para cada jogador
-    sortedPlayers.forEach(player => {
+    players.forEach((player, index) => {
       const listItem = document.createElement("li");
-      const nameSpan = document.createElement('span')
-      const timeSpan = document.createElement('span')
-      nameSpan.textContent = `${player.name}`;
+      const nameSpan = document.createElement("span");
+      const timeSpan = document.createElement("span");
+      nameSpan.textContent = `${index + 1}. ${player.name}`;
       timeSpan.textContent = `${player.time}`;
       listItem.appendChild(nameSpan);
       listItem.appendChild(timeSpan);
       rankingList.appendChild(listItem);
     });
-
-    console.log("Lista de jogadores ordenada:", sortedPlayers);
   } catch (error) {
     console.error("Erro ao buscar os jogadores:", error);
   }

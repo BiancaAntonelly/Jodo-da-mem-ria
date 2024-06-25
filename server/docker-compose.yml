@@ -1,0 +1,12 @@
+# for development
+version: "3.7"
+services:
+  postgres:
+    image: postgres:15.4-alpine
+    container_name: jogo_da_memoria_db
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: jogo_da_memoria
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

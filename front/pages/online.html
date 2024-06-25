@@ -15,18 +15,20 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
-    <script defer src="/js/game.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script defer src="/js/online.js"></script>
 
     <title>Memory Game</title>
   </head>
   <body>
-    <section class="section-3"></section>
+    <section class="section-3">.</section>
     <section class="section-1">
       <div class="header">
         <h1>Memory Game</h1>
       </div>
       <main>
-        <span class="style-timer">Tempo: <span class="timer">0</span></span>
+        <span class="turn">Aguardando início</span>
 
         <div class="grid"></div>
       </main>
@@ -34,8 +36,12 @@
 
     <section class="section-2">
       <div class="scoreboard">
-        <nav><h1>Ranking</h1></nav>
+        <nav><h1>Jogadores</h1></nav>
         <ul id="ranking"></ul>
+        <button id="start-button" class="btn btn-white">Iniciar</button>
+        <button id="play-again-button" class="btn btn-white hidden">
+          Jogar Novamente
+        </button>
       </div>
     </section>
   </body>

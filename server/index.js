@@ -1,42 +1,42 @@
+require("dotenv/config");
 const express = require("express");
 const { Pool } = require("pg");
 const path = require("path");
 const { Sequelize, DataTypes } = require("sequelize");
-const config = require("./config/config.json");
+const config = require("./config/config");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const { Game } = require("./game");
 
 const app = express();
-const port = 3000;
+const port = process.env.APP_PORT;
 
-// Configuração da conexão com o banco de dados
 const sequelize = new Sequelize(config.development);
 
 const Player = sequelize.define(
-    "player",
-    {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      time: { // Mudança: renomeie "time" para "score"
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
+  "player",
+  {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    {
-      tableName: "players", // Mudança: mantenha o nome da tabela como "players"
-    }
+    time: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: "players",
+  }
 );
 
-// Middleware para analisar dados do formulário
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "..", "front")));
 
 app.post("/players", async (req, res) => {
   const { name, time } = req.body;
-  console.log("nome salvo:", name);
   try {
-    // Insere o nome do usuário no banco de dados
     const player = await Player.create({ name, time });
     res.send(player);
   } catch (error) {
@@ -47,13 +47,21 @@ app.post("/players", async (req, res) => {
 
 app.get("/players", async (req, res) => {
   try {
-    // Busca todos os usuários no banco de dados
-    const players = await Player.findAll();
+    const players = await Player.findAll({
+      order: [["time", "asc"]],
+      limit: 10,
+    });
     res.send(players);
   } catch (error) {
     console.error("Erro ao buscar os usuários:", error);
     res.status(500).send("Erro ao buscar os usuários");
   }
+});
+
+app.get("/room", (req, res) => {
+  const room = games.get(req.query.code);
+
+  res.send(room);
 });
 
 app.get("/", async (req, res) => {
@@ -66,6 +74,69 @@ app.get("/memory-game", async (req, res) => {
   );
 });
 
-app.listen(port, () => {
+app.get("/memory-game/online", async (req, res) => {
+  await res.sendFile(
+    path.resolve(__dirname, "..", "front", "pages", "online.html")
+  );
+
+  await res.sendFile(
+    path.join(__dirname, "..", "front", "pages", "online.html")
+  );
+});
+
+const server = createServer(app);
+const io = new Server(server, {});
+
+server.listen(port, () => {
   console.log(`Servidor está rodando em http://localhost:${port}`);
+});
+
+const games = new Map();
+
+io.on("connection", (socket) => {
+  const { name, roomCode } = socket.handshake.query;
+
+  let game = games.get(roomCode);
+
+  if (!game) {
+    game = new Game(socket.id, name);
+
+    games.set(game.roomCode, game);
+
+    socket.join(game.roomCode);
+  } else {
+    game.join(socket.id, name);
+
+    socket.join(game.roomCode);
+  }
+
+  io.to(game.roomCode).emit("game", game);
+
+  socket.on("start", () => {
+    game.start(socket.id);
+
+    io.to(game.roomCode).emit("game", game);
+  });
+
+  socket.on("restart", () => {
+    game.restart(socket.id, () => io.to(game.roomCode).emit("game", game));
+
+    io.to(game.roomCode).emit("game", game);
+  });
+
+  socket.on("flip", (index) => {
+    game.flip(socket.id, index, () => io.to(game.roomCode).emit("game", game));
+
+    io.to(game.roomCode).emit("game", game);
+  });
+
+  socket.on("disconnect", () => {
+    game.leave(socket.id);
+
+    if (game.players.length === 0) {
+      games.delete(game.roomCode);
+    } else {
+      io.to(game.roomCode).emit("game", game);
+    }
+  });
 });

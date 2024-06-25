@@ -21,12 +21,22 @@
     <title>Memory Game</title>
   </head>
   <body>
-      <div class="login-header">
-          <h1>Memory Game</h1>
-      </div>
+    <div class="login-header">
+      <h1>Memory Game</h1>
+    </div>
     <div class="main">
       <nav><h1>Vamos jogar!</h1></nav>
-      <form class="login-form" action="/memory-game" method="GET">
+
+      <form
+        id="login-form"
+        class="login-form"
+        action="/memory-game"
+        method="GET"
+      >
+        <div class="buttons-div">
+          <button id="local-button" class="mode-button selected">Local</button>
+          <button id="online-button" class="mode-button">Online</button>
+        </div>
         <div class="input-area">
           <span>Digite seu nome: </span>
           <input
@@ -45,50 +55,40 @@
           <div class="icon"><i class="fa fa-times-circle"></i></div>
           <strong>Error!</strong> Você precisa preencher o campo nome.
         </div>
-          <a id="button" href="#" class="btn btn-white btn-animate">Play</a>
+        <div id="sala-form-area" class="input-area hidden">
+          <span>Digite o código da sala: </span>
+          <input
+            type="text"
+            placeholder="Sala"
+            id="sala"
+            class="login-input"
+            name="sala"
+            disabled
+          />
+        </div>
+        <div
+          class="alert alert-danger alert-white rounded"
+          id="error-card-sala"
+          style="display: none"
+        >
+          <div class="icon"><i class="fa fa-times-circle"></i></div>
+          <strong>Error!</strong> Sala inválida.
+        </div>
+        <a id="start-button" href="#" class="btn btn-white btn-animate">Play</a>
+        <a id="join-button" href="#" class="btn btn-white btn-animate hidden">
+          Entrar
+        </a>
+        <p id="another-text" class="hidden">Ou então</p>
+        <a id="create-button" href="#" class="btn btn-white btn-animate hidden"
+          >Crie sua sala!</a
+        >
       </form>
     </div>
 
-    <div class="scoreboard">
+    <div id="ranking-board" class="scoreboard">
       <nav><h1>Ranking</h1></nav>
-      <ul id="ranking">
-
-      </ul>
+      <ul id="ranking"></ul>
     </div>
     <script src="./js/index.js"></script>
-    <script>
-      const input = document.querySelector(".login-input");
-      const form = document.querySelector(".login-form");
-
-      const handleSubmit = (event) => {
-        event.preventDefault();
-
-        localStorage.setItem("player", input.value);
-        form.submit();
-        window.location = "pages/memoryGame.html";
-      };
-
-      form.addEventListener("submit", handleSubmit);
-
-      var botaoJogar = document.getElementById("button");
-      var inputNome = document.getElementById("nome");
-      var errorCard = document.getElementById("error-card-nome");
-
-      botaoJogar.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        if (inputNome.value.trim() === "") {
-          errorCard.style.display = "block";
-          setTimeout(function () {
-            errorCard.style.display = "none";
-          }, 3000);
-        }
-
-        if (inputNome.value.trim() !== "") {
-          localStorage.setItem("player", inputNome.value);
-          form.submit();
-        }
-      });
-    </script>
   </body>
 </html>
