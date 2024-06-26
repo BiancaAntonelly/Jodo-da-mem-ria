@@ -24,11 +24,14 @@ class Game {
     this.creatorId = creatorId;
     this.roomCode = "";
     this.players = [{ id: creatorId, name: creatorName, score: 0 }];
+    this.playersJoinOrder = [creatorId];
+    this.playersScoreOrder = [];
     this.started = false;
     this.restarting = false;
     this.sortCards();
     this.firstCard = null;
     this.secondCard = null;
+    this.winner = null;
     this.currentPlayerId = creatorId;
 
     for (let i = 0; i < 6; i++) {
@@ -53,7 +56,11 @@ class Game {
       return;
     }
 
-    const insertPos = this.turn === 0 ? this.players.length : this.turn - 1;
+    this.playersJoinOrder.push(id);
+
+    let insertPos = this.players.findIndex(
+      (player) => player.id === this.currentPlayerId
+    );
 
     this.players = [
       ...this.players.slice(0, insertPos),
@@ -87,6 +94,14 @@ class Game {
     }
 
     this.players.splice(index, 1);
+
+    this.playersJoinOrder = this.playersJoinOrder.filter(
+      (playerId) => playerId !== id
+    );
+
+    if (this.creatorId === id) {
+      this.creatorId = this.playersJoinOrder[0];
+    }
   }
 
   start(playerId) {
@@ -106,12 +121,12 @@ class Game {
       return;
     }
 
-    const winner = [...this.players].sort((a, b) => b.score - a.score)[0];
-
     this.players.forEach((player) => (player.score = 0));
-    this.currentPlayerId = winner.id;
+    this.playersScoreOrder = [];
+    this.currentPlayerId = this.winnerId;
     this.firstCard = null;
     this.secondCard = null;
+    this.winner = null;
     this.cards.forEach((card) => (card.scored = false));
     this.restarting = true;
 
@@ -150,6 +165,24 @@ class Game {
         );
         this.cards[this.firstCard].scored = true;
         this.cards[this.secondCard].scored = true;
+
+        if (!this.playersScoreOrder.includes(playerId)) {
+          this.playersScoreOrder.push(playerId);
+        }
+
+        if (this.cards.every((card) => card.scored)) {
+          const maxScore = Math.max.apply(
+            null,
+            this.players.map((player) => player.score)
+          );
+          const tiedPlayers = this.players
+            .filter((player) => player.score === maxScore)
+            .map((player) => player.id);
+          const winnerId = this.playersScoreOrder.find((playerId) =>
+            tiedPlayers.includes(playerId)
+          );
+          this.winner = this.players.find((player) => player.id === winnerId);
+        }
 
         setTimeout(() => {
           this.firstCard = null;

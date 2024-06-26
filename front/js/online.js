@@ -1,26 +1,6 @@
 const grid = document.querySelector(".grid");
 const turn = document.querySelector(".turn");
 
-const cartasFront = [
-  "carta-front-css",
-  "carta-front-html",
-  "carta-front-java",
-  "carta-front-javascript",
-  "carta-front-node",
-  "carta-front-php",
-  "carta-front-r",
-  "carta-front-scala",
-  "carta-front-swift",
-  "carta-front-thymeleaf",
-  "carta-front-typescript",
-  "carta-front-angular",
-  "carta-front-c++",
-  "carta-front-python",
-  "carta-front-react",
-  "carta-front-ruby",
-];
-const qtCartas = 5;
-
 const createElemment = (tag, className) => {
   const element = document.createElement(tag);
   element.className = className;
@@ -92,7 +72,32 @@ const unscoreCard = (index) => {
 };
 
 const udpateScoreboard = (players) => {
-  const sortedPlayers = players.sort((a, b) => b.score - a.score);
+  const sortedPlayers = players
+    .map((player) => {
+      const joinIndex = game.playersJoinOrder.findIndex(
+        (id) => player.id === id
+      );
+      const scoreIndex = game.playersScoreOrder.findIndex(
+        (id) => player.id === id
+      );
+
+      return {
+        ...player,
+        joinIndex,
+        scoreIndex,
+      };
+    })
+    .sort((a, b) => {
+      if (a.score !== b.score) {
+        return b.score - a.score;
+      }
+
+      if (a.scoreIndex !== -1 && b.scoreIndex !== -1) {
+        return a.scoreIndex - b.scoreIndex;
+      }
+
+      return a.joinIndex - b.joinIndex;
+    });
 
   const rankingList = document.getElementById("ranking");
   const playersList = document.getElementById("players");
@@ -123,9 +128,7 @@ const udpateScoreboard = (players) => {
 };
 
 const updateTurn = () => {
-  const finished = game.cards.every((card) => card.scored);
-
-  if (game.started && !finished) {
+  if (game.started && !game.winner) {
     const currentPlayer = game.players.find(
       (player) => player.id === game.currentPlayerId
     );
@@ -134,22 +137,18 @@ const updateTurn = () => {
   } else if (!game.started) {
     turn.innerHTML = `Aguardando início`;
   } else {
-    const winner = game.players.sort((a, b) => b.score - a.score)[0];
-
-    turn.innerHTML = `${winner.name} venceu!`;
+    turn.innerHTML = `${game.winner.name} venceu!`;
   }
 };
 
 const updateButtons = () => {
-  const finished = game.cards.every((card) => card.scored);
-
-  if (game.started) {
+  if (game.started || game.creatorId !== socket.id) {
     startButton.classList.add("hidden");
   } else {
     startButton.classList.remove("hidden");
   }
 
-  if (finished) {
+  if (game.winner && game.creatorId === socket.id) {
     playAgainButton.classList.remove("hidden");
   } else {
     playAgainButton.classList.add("hidden");

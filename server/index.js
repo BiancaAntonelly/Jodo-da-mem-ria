@@ -88,7 +88,7 @@ const server = createServer(app);
 const io = new Server(server, {});
 
 server.listen(port, () => {
-  console.log(`Servidor está rodando em http://localhost:${port}`);
+  console.log(`Servidor está rodando na porta ${port}`);
 });
 
 const games = new Map();
