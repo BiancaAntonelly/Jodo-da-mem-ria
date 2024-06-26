@@ -128,7 +128,7 @@ const udpateScoreboard = (players) => {
 };
 
 const updateTurn = () => {
-  if (game.started && !game.winner) {
+  if (game.started && !game.winner && game.currentPlayerId) {
     const currentPlayer = game.players.find(
       (player) => player.id === game.currentPlayerId
     );

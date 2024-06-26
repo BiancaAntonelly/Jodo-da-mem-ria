@@ -123,7 +123,9 @@ class Game {
 
     this.players.forEach((player) => (player.score = 0));
     this.playersScoreOrder = [];
-    this.currentPlayerId = this.winnerId;
+    this.currentPlayerId = this.playersJoinOrder.includes(this.winner.id)
+      ? this.winner.id
+      : this.creatorId;
     this.firstCard = null;
     this.secondCard = null;
     this.winner = null;
