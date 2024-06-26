@@ -48,7 +48,10 @@ app.post("/players", async (req, res) => {
 app.get("/players", async (req, res) => {
   try {
     const players = await Player.findAll({
-      order: [["time", "asc"]],
+      order: [
+        ["time", "asc"],
+        ["createdAt", "asc"],
+      ],
       limit: 10,
     });
     res.send(players);

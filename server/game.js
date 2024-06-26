@@ -144,10 +144,13 @@ class Game {
       return;
     }
 
+    const card = this.cards[cardIndex];
+
     if (
       playerId !== this.currentPlayerId ||
       this.firstCard === cardIndex ||
-      this.secondCard !== null
+      this.secondCard !== null ||
+      card.scored
     ) {
       return;
     }
